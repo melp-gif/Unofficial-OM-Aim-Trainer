@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0a0a12" />
+  <title>Unofficial OM Aim Trainer</title>
+  <link rel="stylesheet" href="./src/ui/styles.css" />
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <!-- ======================= LOADING ======================= -->
+  <div id="screen-loading" class="screen">
+    <div class="loading-box">
+      <div class="loading-logo">UNOFFICIAL OM AIM TRAINER</div>
+      <div class="loading-bar"><div id="loading-fill"></div></div>
+      <div id="loading-text">Booting training range…</div>
+    </div>
+  </div>
+
+  <!-- ======================= MAIN MENU ======================= -->
+  <div id="screen-main" class="screen hidden">
+    <div class="menu-hero">
+      <img class="menu-art" src="./assets/hero.png" alt="Training arena key art" onerror="this.style.display='none'" />
+      <div class="menu-title">UNOFFICIAL OM<br /><span>AIM TRAINER</span></div>
+      <div class="menu-sub">A 3D ranged-stun practice range inspired by <b>Outcome Memories</b> — verify every stun, master every projectile.</div>
+      <div class="menu-badges">
+        <span class="badge badge-verified">VERIFIED OM MECHANICS</span>
+        <span class="badge">3D</span>
+        <span class="badge">PC + MOBILE</span>
+        <span class="badge">NO-COOLDOWN TRAINING</span>
+      </div>
+      <div class="menu-buttons">
+        <button class="btn btn-primary" id="btn-play">▶ &nbsp;PLAY / SELECT CHARACTER</button>
+        <button class="btn" id="btn-freepractice">⚡ &nbsp;FREE PRACTICE (AMY)</button>
+        <button class="btn" id="btn-howto">🎮 &nbsp;CONTROLS &amp; HOW TO PLAY</button>
+        <button class="btn" id="btn-research">🔬 &nbsp;RESEARCH &amp; VERIFICATION</button>
+        <button class="btn" id="btn-settings">⚙ &nbsp;SETTINGS</button>
+      </div>
+      <div class="menu-footnote">
+        Unofficial fan trainer. Not affiliated with SEGA, Roblox, or the Outcome Memories developers.
+        Original OM assets are not redistributable — all models, sounds and UI here are original stand-ins.
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= CHARACTER SELECT ======================= -->
+  <div id="screen-character" class="screen hidden">
+    <div class="screen-inner">
+      <button class="btn btn-back" data-back="screen-main">← BACK</button>
+      <h1>SELECT SURVIVOR</h1>
+      <div class="screen-note">Only OM survivors with a <b>verified ranged option</b> are playable. Every ability below lists its verification status.</div>
+      <div id="character-grid" class="card-grid"></div>
+      <div id="character-detail" class="detail-panel">
+        <h2 id="char-detail-name">—</h2>
+        <div id="char-detail-blurb" class="detail-blurb"></div>
+        <div id="char-detail-kit" class="detail-kit"></div>
+        <div id="char-abilities" class="ability-list"></div>
+      </div>
+      <button class="btn btn-primary btn-big" id="btn-char-continue">CONTINUE → TRAINING MODE</button>
+    </div>
+  </div>
+
+  <!-- ======================= MODE SELECT ======================= -->
+  <div id="screen-mode" class="screen hidden">
+    <div class="screen-inner">
+      <button class="btn btn-back" data-back="screen-character">← BACK</button>
+      <h1>TRAINING MODE</h1>
+      <div class="screen-note">Modes switch live — you never need to restart the game to change drill.</div>
+      <div id="mode-grid" class="card-grid"></div>
+      <button class="btn btn-primary btn-big" id="btn-mode-start">START TRAINING ▶</button>
+    </div>
+  </div>
+
+  <!-- ======================= HOW TO PLAY ======================= -->
+  <div id="screen-howto" class="screen hidden">
+    <div class="screen-inner">
+      <button class="btn btn-back" data-back="screen-main">← BACK</button>
+      <h1>CONTROLS &amp; HOW TO PLAY</h1>
+      <div class="howto-cols">
+        <div class="howto-col">
+          <h3>PC</h3>
+          <ul>
+            <li><b>WASD</b> — move &nbsp;·&nbsp; <b>Shift</b> — sprint &nbsp;·&nbsp; <b>Space</b> — jump</li>
+            <li><b>Mouse</b> — aim (click the view to lock the cursor)</li>
+            <li><b>M1 / Left-click</b> — fire primary attack</li>
+            <li><b>Q</b> — ability 1 &nbsp;·&nbsp; <b>E</b> — ability 2 &nbsp;·&nbsp; <b>X</b> — ability 3 &nbsp;·&nbsp; <b>R</b> — ability 4</li>
+            <li><b>C</b> — Tails: cycle laser type &nbsp;·&nbsp; <b>Esc</b> — pause</li>
+          </ul>
+          <h3>Mobile</h3>
+          <ul>
+            <li>Left side — <b>virtual joystick</b></li>
+            <li>Right side — <b>drag to aim</b></li>
+            <li>On-screen buttons — fire, each ability, jump, sprint</li>
+            <li>⚙ button — training panel &nbsp;·&nbsp; everything is touch-reachable</li>
+          </ul>
+        </div>
+        <div class="howto-col">
+          <h3>Loop</h3>
+          <ul>
+            <li>Spawn EXE dummies from the training panel (stationary / moving / attacking / full-movement).</li>
+            <li>Land stuns — every confirmed stun shows the <b>measured</b> duration, <b>impact distance</b> and <b>style points</b>.</li>
+            <li>Watch the 8-second verified stun cap and the post-stun recovery frame.</li>
+            <li>Compare accuracy per character/ability/EXE movement mode in the stats panel.</li>
+          </ul>
+          <h3>Training rules</h3>
+          <ul>
+            <li><b>No-cooldown</b> is on by default: abilities reuse instantly, but windups, charge-ups and the hammer's 8s return still apply (they are mechanics, not cooldowns).</li>
+            <li>Optional practice variations (instant charge / instant hammer recall) are clearly labelled and off by default.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= RESEARCH ======================= -->
+  <div id="screen-research" class="screen hidden">
+    <div class="screen-inner">
+      <button class="btn btn-back" data-back="screen-main">← BACK</button>
+      <h1>RESEARCH &amp; VERIFICATION</h1>
+      <div class="screen-note">
+        Every mechanic in this trainer is tagged: <span class="badge badge-verified">VERIFIED IN OM</span>
+        <span class="badge badge-announced">ANNOUNCED IN OM</span>
+        <span class="badge badge-unverified">IN OM — VALUES UNVERIFIED</span>
+        <span class="badge badge-variant">PRACTICE VARIANT — NOT OFFICIAL OM</span>
+      </div>
+      <div id="research-content"></div>
+    </div>
+  </div>
+
+  <!-- ======================= SETTINGS ======================= -->
+  <div id="screen-settings" class="screen hidden">
+    <div class="screen-inner">
+      <button class="btn btn-back" data-back="screen-main">← BACK</button>
+      <h1>SETTINGS</h1>
+      <div class="settings-grid">
+        <label>Look sensitivity <input type="range" id="set-sensitivity" min="0.2" max="3" step="0.05" value="1" /><span id="set-sensitivity-val">1.00</span></label>
+        <label>Field of view <input type="range" id="set-fov" min="60" max="100" step="1" value="72" /><span id="set-fov-val">72</span></label>
+        <label>Master volume <input type="range" id="set-volume" min="0" max="1" step="0.05" value="0.7" /><span id="set-volume-val">0.70</span></label>
+        <label class="check"><input type="checkbox" id="set-mute" /> Mute all audio</label>
+        <label class="check"><input type="checkbox" id="set-nocooldown" checked /> No-cooldown training (reuse abilities instantly)</label>
+        <label class="check"><input type="checkbox" id="set-instant-charge" /> Practice variation: Instant Tails laser charge <span class="tag-variant">VARIATION</span></label>
+        <label class="check"><input type="checkbox" id="set-instant-recall" /> Practice variation: Instant hammer recall <span class="tag-variant">VARIATION</span></label>
+        <label class="check"><input type="checkbox" id="set-damage" checked /> EXEs can damage the player</label>
+        <label class="check"><input type="checkbox" id="set-aimguide" checked /> Show aim guide line</label>
+      </div>
+      <div class="screen-note small">
+        Cooldown policy: "no waiting for a cooldown timer" — animation locks, charge-ups and verified sequences (like the hammer's 8-second return) are preserved unless you enable their labelled practice variation.
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= IN-GAME HUD ======================= -->
+  <div id="hud" class="hidden">
+    <div id="crosshair">
+      <div class="ch-dot"></div>
+      <div class="ch-line ch-n"></div><div class="ch-line ch-s"></div>
+      <div class="ch-line ch-e"></div><div class="ch-line ch-w"></div>
+    </div>
+    <svg id="aim-guide" width="100%" height="100%">
+      <line id="aim-guide-line" x1="50%" y1="50%" x2="50%" y2="50%" stroke="rgba(255,68,85,0.25)" stroke-width="2" stroke-dasharray="6 8" />
+    </svg>
+
+    <div id="hud-top-left" class="hud-box">
+      <div id="hud-char-name">Amy Rose</div>
+      <div class="hp-wrap"><div id="hud-hp-fill"></div></div>
+      <div id="hud-hp-text">100 / 100</div>
+      <div id="hud-tarot"></div>
+    </div>
+
+    <div id="hud-top-center" class="hud-box">
+      <div id="hud-mode">Custom Practice</div>
+      <div class="hud-badges">
+        <span class="badge badge-verified" id="badge-nocooldown">NO-COOLDOWN</span>
+        <span class="badge" id="badge-range">target: —</span>
+      </div>
+    </div>
+
+    <div id="hud-top-right" class="hud-box">
+      <div id="hud-score">0</div>
+      <div id="hud-score-label">STYLE POINTS</div>
+      <div id="hud-combo">combo x1</div>
+      <div id="hud-acc">acc 0%</div>
+    </div>
+
+    <div id="ability-bar"></div>
+    <div id="laser-panel" class="hidden">
+      <div class="laser-title">LASER CANNON TYPE <span id="laser-active-name">Plasma Beam</span></div>
+      <div id="laser-buttons"></div>
+      <div id="laser-props" class="laser-props"></div>
+    </div>
+
+    <div id="combat-feed"></div>
+    <div id="stun-popup" class="hidden"></div>
+    <div id="float-layer"></div>
+
+    <div id="hud-buttons">
+      <button class="btn btn-hud" id="btn-open-spawner">⚙ TRAINING</button>
+      <button class="btn btn-hud" id="btn-open-stats">📊 STATS</button>
+      <button class="btn btn-hud" id="btn-open-results">🎯 LAST STUN</button>
+      <button class="btn btn-hud" id="btn-pause">⏸ PAUSE</button>
+    </div>
+
+    <!-- mobile controls -->
+    <div id="mobile-controls" class="hidden">
+      <div id="touch-stick-base"><div id="touch-stick-knob"></div></div>
+      <div id="mobile-buttons">
+        <button class="m-btn m-fire" id="m-fire">FIRE</button>
+        <button class="m-btn" id="m-ab0">AB1</button>
+        <button class="m-btn" id="m-ab1">AB2</button>
+        <button class="m-btn" id="m-ab2">AB3</button>
+        <button class="m-btn" id="m-ab3">AB4</button>
+        <button class="m-btn m-jump" id="m-jump">JUMP</button>
+        <button class="m-btn m-run" id="m-run">RUN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= SPAWNER PANEL ======================= -->
+  <aside id="panel-spawner" class="side-panel hidden">
+    <div class="panel-head">
+      <h2>EXE TRAINING DUMMIES</h2>
+      <button class="btn btn-close" data-close="panel-spawner">✕</button>
+    </div>
+    <div class="panel-body">
+      <div class="field-row">
+        <label>EXE type</label>
+        <select id="sp-exe-type">
+          <option value="2011x">2011X — fast chaser</option>
+          <option value="kolossus">Kolossus — heavy grappler</option>
+          <option value="tripwire">Tripwire — trap &amp; punish</option>
+          <option value="v1">V1 — parry duellist (only ranged stuns connect)</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label>Behaviour</label>
+        <select id="sp-mode">
+          <option value="stationary">A. Stationary</option>
+          <option value="moving">B. Moving</option>
+          <option value="attacking">C. Attacking</option>
+          <option value="full">D. Full-Movement</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label>Movement pattern</label>
+        <select id="sp-pattern">
+          <option value="zigzag">Zigzag</option>
+          <option value="straight">Straight-line</option>
+          <option value="strafe">Strafing</option>
+          <option value="wander">Wandering</option>
+          <option value="random">Random</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label>Spawn distance <span id="sp-distance-val">60</span> studs</label>
+        <input type="range" id="sp-distance" min="10" max="250" step="5" value="60" />
+      </div>
+      <div class="field-row">
+        <label>Speed multiplier <span id="sp-speed-val">1.0x</span></label>
+        <input type="range" id="sp-speed" min="0.2" max="3" step="0.1" value="1" />
+      </div>
+      <div class="field-row">
+        <label>Aggression <span id="sp-aggression-val">0.7</span></label>
+        <input type="range" id="sp-aggression" min="0" max="1" step="0.05" value="0.7" />
+      </div>
+      <div class="field-row">
+        <label>Difficulty</label>
+        <select id="sp-difficulty">
+          <option value="easy">Easy (long windups)</option>
+          <option value="normal" selected>Normal</option>
+          <option value="hard">Hard (short windups)</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label>Health <span id="sp-health-val">100</span></label>
+        <input type="range" id="sp-health" min="20" max="400" step="10" value="100" />
+      </div>
+      <div class="field-row">
+        <label>Damage to player <span id="sp-damage-val">25</span></label>
+        <input type="range" id="sp-damage" min="0" max="60" step="5" value="25" />
+      </div>
+      <div class="field-row">
+        <label>Dummy count <span id="sp-count-val">1</span></label>
+        <input type="range" id="sp-count" min="1" max="12" step="1" value="1" />
+      </div>
+      <div class="field-row">
+        <label>Patrol area radius <span id="sp-area-val">45</span> studs</label>
+        <input type="range" id="sp-area" min="15" max="120" step="5" value="45" />
+      </div>
+      <div class="field-row">
+        <label>Facing</label>
+        <select id="sp-facing">
+          <option value="-1">Face the player</option>
+          <option value="0">Fixed: north</option>
+          <option value="90">Fixed: east</option>
+          <option value="180">Fixed: south</option>
+          <option value="270">Fixed: west</option>
+        </select>
+      </div>
+      <div class="checks">
+        <label class="check"><input type="checkbox" id="sp-can-damage" checked /> EXE can damage/defeat player</label>
+        <label class="check"><input type="checkbox" id="sp-auto-respawn" checked /> Auto-respawn after defeat</label>
+        <label class="check"><input type="checkbox" id="sp-reset-stun" /> Reset position after successful stun</label>
+        <label class="check"><input type="checkbox" id="sp-show-health" checked /> Show health bar</label>
+        <label class="check"><input type="checkbox" id="sp-show-stun" checked /> Show stun status</label>
+        <label class="check"><input type="checkbox" id="sp-show-distance" checked /> Show distance</label>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="sp-spawn">＋ Spawn</button>
+        <button class="btn" id="sp-remove-selected">Remove Selected</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="sp-remove-all">Remove All</button>
+        <button class="btn" id="sp-reset-pos">Reset Position</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="sp-respawn">Respawn</button>
+        <button class="btn" id="sp-select-next">Select Next Dummy</button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-danger" id="sp-clear-session">Clear Session</button>
+      </div>
+      <div id="sp-status" class="panel-status">No dummies spawned.</div>
+    </div>
+  </aside>
+
+  <!-- ======================= STATS PANEL ======================= -->
+  <aside id="panel-stats" class="side-panel hidden">
+    <div class="panel-head">
+      <h2>SESSION ANALYTICS</h2>
+      <button class="btn btn-close" data-close="panel-stats">✕</button>
+    </div>
+    <div class="panel-body">
+      <div id="stats-live"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="stats-save">Save Session</button>
+        <button class="btn" id="stats-reset">Reset Stats</button>
+      </div>
+      <h3>SESSION HISTORY</h3>
+      <div id="stats-history"></div>
+      <div class="btn-row">
+        <button class="btn btn-danger" id="stats-clear-history">Clear History</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ======================= RESULTS PANEL ======================= -->
+  <aside id="panel-results" class="side-panel hidden">
+    <div class="panel-head">
+      <h2>LAST STUN — DETAILED</h2>
+      <button class="btn btn-close" data-close="panel-results">✕</button>
+    </div>
+    <div class="panel-body">
+      <div id="results-body">
+        <div class="panel-status">No stuns recorded yet. Land a stun to see measured details here.</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ======================= PAUSE ======================= -->
+  <div id="pause-menu" class="modal hidden">
+    <div class="modal-box">
+      <h2>PAUSED</h2>
+      <button class="btn btn-primary" id="pause-resume">RESUME</button>
+      <button class="btn" id="pause-settings">SETTINGS</button>
+      <button class="btn" id="pause-reset-session">RESET SESSION STATS</button>
+      <button class="btn btn-danger" id="pause-exit">EXIT TO MENU</button>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

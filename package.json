@@ -1,0 +1,22 @@
+{
+  "name": "unofficial-om-aim-trainer",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Unofficial OM Aim Trainer - a 3D ranged-stun practice trainer inspired by Outcome Memories (Roblox)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
+    "test": "node tests/run-tests.mjs && node tests/gameplay-sim.mjs",
+    "test:unit": "node tests/run-tests.mjs",
+    "test:sim": "node tests/gameplay-sim.mjs"
+  },
+  "dependencies": {
+    "three": "0.169.0"
+  },
+  "devDependencies": {
+    "jsdom": "^25.0.1",
+    "vite": "5.4.11"
+  }
+}
